@@ -1040,6 +1040,26 @@ ab3 = "B"
     }
 
     #[test]
+    fn nested_flattening() {
+        #[derive(TomlExample, Deserialize)]
+        struct ItemWrapper {
+            #[toml_example(flatten, nesting)]
+            _item: HashMap<String, Item>,
+            _more: u32,
+        }
+        #[derive(TomlExample, Deserialize)]
+        struct Item {
+            #[toml_example(nesting)]
+            _nested: NestedItem,
+        }
+        #[derive(TomlExample, Deserialize)]
+        struct NestedItem {
+            _value: String,
+        }
+        assert!(toml::from_str::<ItemWrapper>(&ItemWrapper::toml_example()).is_ok());
+    }
+
+    #[test]
     fn multi_attr_escaping() {
         #[derive(TomlExample, Deserialize, PartialEq)]
         struct ConfigWrapper {
